@@ -63,7 +63,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1041825808690',
     projectId: 'mynotes-jhn',
     storageBucket: 'mynotes-jhn.appspot.com',
-    iosClientId: '1041825808690-6ip211cmkenha8g3c9rubckshm2ms9ra.apps.googleusercontent.com',
+    iosClientId:
+        '1041825808690-6ip211cmkenha8g3c9rubckshm2ms9ra.apps.googleusercontent.com',
     iosBundleId: 'com.example.mynotes',
   );
 }

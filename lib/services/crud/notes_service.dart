@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:mynotes/extensions/filter.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -7,6 +8,10 @@ import 'crud_exceptions.dart';
 
 class NotesService {
   Database? _db;
+
+  DatabaseUser? _user;
+  List<DatabaseNote> _notes = [];
+  late final StreamController<List<DatabaseNote>> _notesStreamController;
 
 //singleton
   static final NotesService _shared = NotesService._sharedInstance();
@@ -19,10 +24,6 @@ class NotesService {
   }
   factory NotesService() => _shared;
 
-  List<DatabaseNote> _notes = [];
-  late final StreamController<List<DatabaseNote>> _notesStreamController;
-
-  Stream<List<DatabaseNote>> get getNotes => _notesStreamController.stream;
   Future<void> _ensureDbIsOpen() async {
     try {
       await open();
@@ -31,12 +32,31 @@ class NotesService {
     }
   }
 
-  Future<DatabaseUser> getOrCreateUser({required String email}) async {
+  Stream<List<DatabaseNote>> get allNotes =>
+      _notesStreamController.stream.filter((note) {
+        final currentUser = _user;
+        if (currentUser != null) {
+          return note.userId == currentUser.id;
+        } else {
+          throw UserShouldBeSetException();
+        }
+      });
+
+  Future<DatabaseUser> getOrCreateUser({
+    required String email,
+    bool setAsCurrentUser = true,
+  }) async {
     try {
       final user = await getUser(email: email);
+      if (setAsCurrentUser) {
+        _user = user;
+      }
       return user;
     } on CouldNotFindUserException {
       final createdUser = await createUser(email: email);
+      if (setAsCurrentUser) {
+        _user = createdUser;
+      }
       return createdUser;
     } catch (e) {
       rethrow;
@@ -59,8 +79,9 @@ class NotesService {
       throw CouldNotFindUserException();
     }
 
-    final updateCount = await db
-        .update(noteTable, {textColumn: text, isSyncedWithCloudColumn: 0});
+    final updateCount = await db.update(
+        noteTable, {textColumn: text, isSyncedWithCloudColumn: 0},
+        where: 'id=?', whereArgs: [note.id]);
 
     if (updateCount == 0) {
       throw CouldNotUpdateNoteException();

@@ -8,7 +8,6 @@ import 'crud_exceptions.dart';
 
 class NotesService {
   Database? _db;
-
   DatabaseUser? _user;
   List<DatabaseNote> _notes = [];
   late final StreamController<List<DatabaseNote>> _notesStreamController;

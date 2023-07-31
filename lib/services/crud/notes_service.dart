@@ -10,12 +10,17 @@ class NotesService {
 
 //singleton
   static final NotesService _shared = NotesService._sharedInstance();
-  NotesService._sharedInstance();
+  NotesService._sharedInstance() {
+    _notesStreamController = StreamController<List<DatabaseNote>>.broadcast(
+      onListen: () {
+        _notesStreamController.sink.add(_notes);
+      },
+    );
+  }
   factory NotesService() => _shared;
 
   List<DatabaseNote> _notes = [];
-  final _notesStreamController =
-      StreamController<List<DatabaseNote>>.broadcast();
+  late final StreamController<List<DatabaseNote>> _notesStreamController;
 
   Stream<List<DatabaseNote>> get getNotes => _notesStreamController.stream;
   Future<void> _ensureDbIsOpen() async {
@@ -28,7 +33,7 @@ class NotesService {
 
   Future<DatabaseUser> getOrCreateUser({required String email}) async {
     try {
-      final user = getUser(email: email);
+      final user = await getUser(email: email);
       return user;
     } on CouldNotFindUserException {
       final createdUser = await createUser(email: email);
@@ -129,7 +134,7 @@ class NotesService {
       throw CouldNotFindUserException();
     }
 
-    const text = '';
+    const text = 'TTT';
     final noteId = await db.insert(noteTable,
         {userIdColumn: owner.id, textColumn: text, isSyncedWithCloudColumn: 1});
 
@@ -151,12 +156,12 @@ class NotesService {
     final results = await db.query(
       userTable,
       limit: 1,
-      where: 'email=?',
+      where: 'email = ?',
       whereArgs: [email.toLowerCase()],
     );
 
-    if (results.isNotEmpty) {
-      throw CouldNotFindUserException;
+    if (results.isEmpty) {
+      throw CouldNotFindUserException();
     } else {
       return DatabaseUser.fromRow(results.first);
     }
@@ -275,7 +280,7 @@ class DatabaseNote {
 
   @override
   String toString() =>
-      'Notes,, ID=$id, userId= $userId, isSyncedWithCloud = $isSyncedWithCloud';
+      'Notes,, ID=$id, userId= $userId, isSyncedWithCloud = $isSyncedWithCloud, text = $text';
 
   @override
   bool operator ==(covariant DatabaseNote other) => id == other.id;
@@ -304,11 +309,11 @@ const createUserTable = ''' CREATE TABLE IF NOT EXISTS "user" (
 
 // create the note table
 
-const createNoteTable = '''CREATE TABLE "note" (
-	"id"	INTEGER NOT NULL,
-	"user_id"	INTEGER NOT NULL,
-	"text"	TEXT,
-	"is_synced_with_cloud"	INTEGER NOT NULL DEFAULT 0,
-	FOREIGN KEY("user_id") REFERENCES "user"("id"),
-  PRIMARY KEY("id" AUTOINCREMENT)
-);''';
+const createNoteTable = '''CREATE TABLE IF NOT EXISTS "note" (
+        "id"	INTEGER NOT NULL,
+        "user_id"	INTEGER NOT NULL,
+        "text"	TEXT,
+        "is_synced_with_cloud"	INTEGER NOT NULL DEFAULT 0,
+        FOREIGN KEY("user_id") REFERENCES "user"("id"),
+        PRIMARY KEY("id" AUTOINCREMENT)
+      );''';

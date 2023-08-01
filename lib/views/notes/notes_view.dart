@@ -83,7 +83,16 @@ class _NotesViewState extends State<NotesView> {
                             },
                           );
                         } else {
-                          return const CircularProgressIndicator();
+                          return const Scaffold(
+                            body: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircularProgressIndicator(),
+                                ],
+                              ),
+                            ),
+                          );
                         }
                       default:
                         return const CircularProgressIndicator();

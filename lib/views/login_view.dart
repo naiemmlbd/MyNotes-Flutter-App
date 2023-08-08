@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
-import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
-import 'package:mynotes/services/auth/bloc/auth_events.dart';
+import 'package:mynotes/services/auth/bloc/auth_cubit.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import '../utilities/dialogs/error_dialog.dart';
 
@@ -39,12 +38,12 @@ class _LoginViewState extends State<LoginView> {
   void _login(BuildContext context) {
     final email = emailController.text;
     final password = passwordController.text;
-    context.read<AuthBloc>().add(AuthEventLogIn(email, password));
+    context.read<AuthCubit>().logIn(email, password);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) async {
         if (state is AuthStateLoggedOut) {
           if (state.exception is UserNotFoundAuthException) {
@@ -176,11 +175,7 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
-                      context
-                          .read<AuthBloc>()
-                          .add(const AuthEventShouldRegister());
-                    },
+                    onPressed: () {},
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

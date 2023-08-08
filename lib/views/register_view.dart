@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
-import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
+import 'package:mynotes/services/auth/bloc/auth_cubit.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
-import '../services/auth/bloc/auth_events.dart';
 import '../utilities/dialogs/error_dialog.dart';
 
 class RegisterView extends StatefulWidget {
@@ -33,7 +32,7 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) async {
         if (state is AuthStateRegistering) {
           if (state.exception is WeakPasswordAuthException) {
@@ -69,18 +68,13 @@ class _RegisterViewState extends State<RegisterView> {
               onPressed: () async {
                 final email = _email.text;
                 final password = _password.text;
-                context.read<AuthBloc>().add(
-                      AuthEventRegister(
-                        email,
-                        password,
-                      ),
-                    );
+                context.read<AuthCubit>().register(email, password);
               },
               child: const Text('Register'),
             ),
             TextButton(
               onPressed: () {
-                context.read<AuthBloc>().add(const AuthEventLogOut());
+                context.read<AuthCubit>().logOut();
               },
               child: const Text('Already registered? Login here!'),
             )

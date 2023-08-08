@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/constants/routes.dart';
 import 'package:mynotes/helpers/loading/loading_screen.dart';
-import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
-import 'package:mynotes/services/auth/bloc/auth_events.dart';
+import 'package:mynotes/services/auth/bloc/auth_cubit.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/services/auth/firebase_auth_provider.dart';
 import 'package:mynotes/views/login_view.dart';
@@ -21,8 +20,8 @@ void main() {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: BlocProvider<AuthBloc>(
-        create: (context) => AuthBloc(FirebaseAuthProvider()),
+      home: BlocProvider<AuthCubit>(
+        create: (context) => AuthCubit(FirebaseAuthProvider()),
         child: const HomePage(),
       ),
       routes: {
@@ -37,8 +36,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.read<AuthBloc>().add(const AuthEventInitialize());
-    return BlocConsumer<AuthBloc, AuthState>(
+    context.read<AuthCubit>().initialize();
+    return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state.isLoading) {
           LoadingScreen().show(

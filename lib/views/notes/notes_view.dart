@@ -30,13 +30,24 @@ class _NotesViewState extends State<NotesView> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Your notes'),
+          title: const Text('Notes'),
           actions: [
-            IconButton(
+            ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: ElevatedButton.icon(
                 onPressed: () {
                   Navigator.of(context).pushNamed(createOrUpdateNoteRoute);
                 },
-                icon: const Icon(Icons.add)),
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: const Text(
+                  'Add',
+                  style: TextStyle(color: Colors.amberAccent),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey,
+                ),
+              ),
+            ),
             PopupMenuButton<MenuAction>(
               onSelected: (value) async {
                 switch (value) {

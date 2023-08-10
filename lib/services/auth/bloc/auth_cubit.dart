@@ -4,7 +4,7 @@ import 'package:mynotes/services/auth/firebase_auth_provider.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit(this.authProvider)
-      : super(const AuthStateUninitialized(isLoading: true));
+      : super(const AuthStateUninitialized(status: AuthStatus.loading));
 
   final FirebaseAuthProvider authProvider;
 
@@ -16,7 +16,7 @@ class AuthCubit extends Cubit<AuthState> {
   void shouldRegister() {
     emit(const AuthStateRegistering(
       exception: null,
-      isLoading: false,
+      status: AuthStatus.notLoading,
     ));
   }
 
@@ -26,12 +26,12 @@ class AuthCubit extends Cubit<AuthState> {
     if (user == null) {
       emit(const AuthStateLoggedOut(
         exception: null,
-        isLoading: false,
+        status: AuthStatus.notLoading,
       ));
     } else if (!user.isEmailVerified) {
-      emit(const AuthStateNeedsVerification(isLoading: false));
+      emit(const AuthStateNeedsVerification(status: AuthStatus.notLoading));
     } else {
-      emit(AuthStateLoggedIn(user: user, isLoading: false));
+      emit(AuthStateLoggedIn(user: user, status: AuthStatus.notLoading));
     }
   }
 
@@ -42,31 +42,33 @@ class AuthCubit extends Cubit<AuthState> {
         password: password,
       );
       await authProvider.sendEmailVerification();
-      emit(const AuthStateNeedsVerification(isLoading: false));
+      emit(const AuthStateNeedsVerification(status: AuthStatus.notLoading));
     } on Exception catch (e) {
       emit(AuthStateRegistering(
         exception: e,
-        isLoading: false,
+        status: AuthStatus.notLoading,
       ));
     }
   }
 
   void logIn(String email, String password) async {
     emit(const AuthStateLoggedOut(
-        exception: null, isLoading: true, loadingText: 'Please wait...'));
+        exception: null,
+        status: AuthStatus.loading,
+        loadingText: 'Please wait...'));
     try {
       final user = await authProvider.logIn(email: email, password: password);
       if (!user.isEmailVerified) {
         emit(const AuthStateLoggedOut(
           exception: null,
-          isLoading: false,
+          status: AuthStatus.notLoading,
         ));
-        emit(const AuthStateNeedsVerification(isLoading: false));
+        emit(const AuthStateNeedsVerification(status: AuthStatus.notLoading));
       } else {
-        emit(AuthStateLoggedIn(user: user, isLoading: false));
+        emit(AuthStateLoggedIn(user: user, status: AuthStatus.notLoading));
       }
     } on Exception catch (e) {
-      emit(AuthStateLoggedOut(exception: e, isLoading: false));
+      emit(AuthStateLoggedOut(exception: e, status: AuthStatus.notLoading));
     }
   }
 
@@ -75,12 +77,12 @@ class AuthCubit extends Cubit<AuthState> {
       await authProvider.logOut();
       emit(const AuthStateLoggedOut(
         exception: null,
-        isLoading: false,
+        status: AuthStatus.notLoading,
       ));
     } on Exception catch (e) {
       emit(AuthStateLoggedOut(
         exception: e,
-        isLoading: false,
+        status: AuthStatus.notLoading,
       ));
     }
   }

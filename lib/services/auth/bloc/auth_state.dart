@@ -4,51 +4,58 @@ import 'package:equatable/equatable.dart';
 
 @immutable
 abstract class AuthState {
-  final bool isLoading;
+  final AuthStatus status;
+
   final String? loadingText;
   const AuthState({
-    required this.isLoading,
+    required this.status,
     this.loadingText = 'Please wait a moment',
   });
 }
 
 class AuthStateUninitialized extends AuthState {
-  const AuthStateUninitialized({required bool isLoading})
-      : super(isLoading: isLoading);
+  const AuthStateUninitialized({required AuthStatus status})
+      : super(status: status);
 }
 
 class AuthStateRegistering extends AuthState {
   final Exception? exception;
   const AuthStateRegistering({
     required this.exception,
-    required isLoading,
-  }) : super(isLoading: isLoading);
+    required AuthStatus status,
+  }) : super(status: status);
 }
 
 class AuthStateLoggedIn extends AuthState {
   final AuthUser user;
   const AuthStateLoggedIn({
     required this.user,
-    required bool isLoading,
-  }) : super(isLoading: isLoading);
+    required AuthStatus status,
+  }) : super(status: status);
 }
 
 class AuthStateNeedsVerification extends AuthState {
-  const AuthStateNeedsVerification({required bool isLoading})
-      : super(isLoading: isLoading);
+  const AuthStateNeedsVerification({
+    required AuthStatus status,
+  }) : super(status: status);
 }
 
 class AuthStateLoggedOut extends AuthState with EquatableMixin {
   final Exception? exception;
   const AuthStateLoggedOut({
     required this.exception,
-    required bool isLoading,
+    required AuthStatus status,
     String? loadingText,
   }) : super(
-          isLoading: isLoading,
+          status: status,
           loadingText: loadingText,
         );
 
   @override
-  List<Object?> get props => [exception, isLoading];
+  List<Object?> get props => [exception, status];
+}
+
+enum AuthStatus {
+  loading,
+  notLoading,
 }

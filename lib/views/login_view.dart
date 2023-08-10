@@ -4,6 +4,7 @@ import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/bloc/auth_cubit.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import '../utilities/dialogs/error_dialog.dart';
+import 'custom_text_field.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -85,72 +86,28 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                   const SizedBox(height: 100),
-                  SizedBox(
-                    height: 55,
-                    width: double.infinity,
-                    child: TextFormField(
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey[200],
-                        hintText: 'Enter your email here',
-                        hintStyle: const TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide:
-                              const BorderSide(color: Colors.transparent),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide:
-                              const BorderSide(color: Colors.transparent),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        return null;
-                      },
-                    ),
+                  CustomTextField(
+                    controller: emailController,
+                    hintText: 'Enter your email here',
+                    obscureText: false,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 10),
-                  SizedBox(
-                    height: 55,
-                    width: double.infinity,
-                    child: TextFormField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey[200],
-                        hintText: 'Enter your password here',
-                        hintStyle: const TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide:
-                              const BorderSide(color: Colors.transparent),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide:
-                              const BorderSide(color: Colors.transparent),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                    ),
+                  CustomTextField(
+                    controller: passwordController,
+                    hintText: 'Enter your password',
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(

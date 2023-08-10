@@ -39,13 +39,19 @@ class HomePage extends StatelessWidget {
     context.read<AuthCubit>().initialize();
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state.isLoading) {
-          LoadingScreen().show(
-              context: context,
-              text: state.loadingText ?? 'Please wait a moment');
-        } else {
-          LoadingScreen().hide();
+        switch (state.status) {
+          case AuthStatus.loading:
+            LoadingScreen().show(
+                context: context,
+                text: state.loadingText ?? 'Please wait a moment');
+            break;
+          case AuthStatus.notLoading:
+            LoadingScreen().hide();
+            break;
         }
+      },
+      listenWhen: (previousState, currentState) {
+        return previousState.status != currentState.status;
       },
       builder: (context, state) {
         if (state is AuthStateLoggedIn) {

@@ -32,6 +32,8 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<AuthCubit>();
+
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) async {
         if (state is AuthStateRegistering) {
@@ -68,13 +70,13 @@ class _RegisterViewState extends State<RegisterView> {
               onPressed: () async {
                 final email = _email.text;
                 final password = _password.text;
-                context.read<AuthCubit>().register(email, password);
+                cubit.register(email, password);
               },
               child: const Text('Register'),
             ),
             TextButton(
               onPressed: () {
-                context.read<AuthCubit>().logOut();
+                cubit.logOut;
               },
               child: const Text('Already registered? Login here!'),
             )

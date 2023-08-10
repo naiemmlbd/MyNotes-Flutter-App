@@ -22,7 +22,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               "If you haven't received a verification email yet, press the button below"),
           TextButton(
             onPressed: () async {
-              context.read<AuthCubit>().sendEmailVerification();
+              context.read<AuthCubit>().sendEmailVerification;
             },
             child: const Text(
               'Send email verification',
@@ -30,7 +30,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           ),
           TextButton(
               onPressed: () async {
-                context.read<AuthCubit>().logOut();
+                context.read<AuthCubit>().logOut;
               },
               child: const Text('Restart'))
         ],

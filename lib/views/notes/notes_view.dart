@@ -6,6 +6,7 @@ import 'package:mynotes/services/crud/notes_service.dart';
 import 'package:mynotes/views/notes/notes_list_view.dart';
 import '../../constants/routes.dart';
 import '../../enums/menu_action.dart';
+import '../../services/crud/models/database_note.dart';
 import '../../utilities/dialogs/logout_dialog.dart';
 
 class NotesView extends StatefulWidget {

@@ -3,7 +3,7 @@ import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/crud/notes_service.dart';
 import 'package:mynotes/utilities/generics/get_arguments.dart';
 import 'package:share_plus/share_plus.dart';
-
+import '../../services/crud/models/database_note.dart';
 import '../../utilities/dialogs/cannot_share_empty_note_dialog.dart';
 
 class CreateUpdateNoteView extends StatefulWidget {

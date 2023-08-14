@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import 'package:mynotes/services/auth/firebase_auth_provider.dart';
@@ -52,10 +53,6 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   void logIn(String email, String password) async {
-    emit(const AuthStateLoggedOut(
-        exception: null,
-        status: AuthStatus.loading,
-        loadingText: 'Please wait...'));
     try {
       final user = await authProvider.logIn(email: email, password: password);
       if (!user.isEmailVerified) {
@@ -74,6 +71,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   void logOut() async {
     try {
+      debugPrint('Login -> logout');
       await authProvider.logOut();
       emit(const AuthStateLoggedOut(
         exception: null,

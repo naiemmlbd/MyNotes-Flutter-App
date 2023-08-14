@@ -1,11 +1,15 @@
+import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mynotes/constants/app_router.gr.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
 import 'package:mynotes/services/auth/bloc/auth_cubit.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import '../utilities/dialogs/error_dialog.dart';
 import 'custom_text_field.dart';
 
+@RoutePage()
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
 
@@ -132,7 +136,9 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      context.router.push(const RegisterRoute());
+                    },
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

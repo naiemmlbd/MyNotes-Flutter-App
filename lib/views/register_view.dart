@@ -1,3 +1,4 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
@@ -5,6 +6,7 @@ import 'package:mynotes/services/auth/bloc/auth_cubit.dart';
 import 'package:mynotes/services/auth/bloc/auth_state.dart';
 import '../utilities/dialogs/error_dialog.dart';
 
+@RoutePage()
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
 

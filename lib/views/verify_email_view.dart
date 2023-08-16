@@ -32,7 +32,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           ),
           TextButton(
               onPressed: () async {
-                context.read<AuthCubit>().logOut;
+                context.read<AuthCubit>().logOut();
               },
               child: const Text('Restart'))
         ],

@@ -38,6 +38,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   void register(String email, String password) async {
     try {
+      await Future.delayed(const Duration(seconds: 1));
       await authProvider.createUser(
         email: email,
         password: password,

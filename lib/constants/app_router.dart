@@ -7,11 +7,12 @@ import 'package:mynotes/constants/app_router.gr.dart';
 class AppRouter extends $AppRouter {
   @override
   List<AutoRoute> get routes => [
-        AutoRoute(page: CreateUpdateNoteRoute.page),
-        AutoRoute(page: LoginRoute.page),
-        AutoRoute(page: RegisterRoute.page),
-        AutoRoute(page: VerifyEmailRoute.page),
-        AutoRoute(page: NotesRoute.page),
-        AutoRoute(page: HomePage.page, path: '/')
+        AutoRoute(page: AppScreen.page, initial: true, children: [
+          AutoRoute(page: CreateUpdateNoteRoute.page),
+          AutoRoute(page: LoginRoute.page, initial: true),
+          AutoRoute(page: RegisterRoute.page),
+          AutoRoute(page: VerifyEmailRoute.page),
+          AutoRoute(page: NotesRoute.page),
+        ]),
       ];
 }

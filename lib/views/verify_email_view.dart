@@ -1,7 +1,7 @@
 import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mynotes/services/auth/bloc/auth_cubit.dart';
+import '../services/auth/cubit/auth_cubit.dart';
 
 @RoutePage()
 class VerifyEmailView extends StatefulWidget {

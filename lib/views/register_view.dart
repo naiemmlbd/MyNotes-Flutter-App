@@ -2,8 +2,7 @@ import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
-import 'package:mynotes/services/auth/bloc/auth_cubit.dart';
-import 'package:mynotes/services/auth/bloc/auth_state.dart';
+import '../services/auth/cubit/auth_cubit.dart';
 import '../utilities/dialogs/error_dialog.dart';
 
 @RoutePage()
@@ -32,20 +31,29 @@ class _RegisterViewState extends State<RegisterView> {
     super.dispose();
   }
 
+  void _showErrorDialog(String errorMessage) async {
+    await showErrorDialog(context, errorMessage);
+  }
+
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<AuthCubit>();
 
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) async {
-        if (state is AuthStateRegistering) {
-          if (state.exception is WeakPasswordAuthException) {
-            await showErrorDialog(context, 'Weak password');
-          } else if (state.exception is EmailAlreadyUseAuthException) {
-            await showErrorDialog(context, 'Email is already in use');
-          } else if (state.exception is GenericAuthException) {
-            await showErrorDialog(context, 'Failed to register');
-          }
+        if (state.authStatus.isRegistering) {
+          state.status.maybeWhen(
+            orElse: () => '',
+            failed: (Exception exception) {
+              if (exception is WeakPasswordAuthException) {
+                _showErrorDialog('Weak password');
+              } else if (exception is EmailAlreadyUseAuthException) {
+                _showErrorDialog('Email is already in use');
+              } else if (exception is GenericAuthException) {
+                _showErrorDialog('Failed to register');
+              }
+            },
+          );
         }
       },
       child: Scaffold(
@@ -77,9 +85,7 @@ class _RegisterViewState extends State<RegisterView> {
               child: const Text('Register'),
             ),
             TextButton(
-              onPressed: () {
-                cubit.logOut;
-              },
+              onPressed: cubit.logOut,
               child: const Text('Already registered? Login here!'),
             )
           ],

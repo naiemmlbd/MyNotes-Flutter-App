@@ -20,7 +20,7 @@ mixin _$BaseStatus {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(String error) failed,
+    required TResult Function(Exception exception) failed,
     required TResult Function() success,
   }) =>
       throw _privateConstructorUsedError;
@@ -28,7 +28,7 @@ mixin _$BaseStatus {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(String error)? failed,
+    TResult? Function(Exception exception)? failed,
     TResult? Function()? success,
   }) =>
       throw _privateConstructorUsedError;
@@ -36,7 +36,7 @@ mixin _$BaseStatus {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(String error)? failed,
+    TResult Function(Exception exception)? failed,
     TResult Function()? success,
     required TResult orElse(),
   }) =>
@@ -125,7 +125,7 @@ class _$_Initial extends _Initial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(String error) failed,
+    required TResult Function(Exception exception) failed,
     required TResult Function() success,
   }) {
     return initial();
@@ -136,7 +136,7 @@ class _$_Initial extends _Initial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(String error)? failed,
+    TResult? Function(Exception exception)? failed,
     TResult? Function()? success,
   }) {
     return initial?.call();
@@ -147,7 +147,7 @@ class _$_Initial extends _Initial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(String error)? failed,
+    TResult Function(Exception exception)? failed,
     TResult Function()? success,
     required TResult orElse(),
   }) {
@@ -239,7 +239,7 @@ class _$_Loading extends _Loading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(String error) failed,
+    required TResult Function(Exception exception) failed,
     required TResult Function() success,
   }) {
     return loading();
@@ -250,7 +250,7 @@ class _$_Loading extends _Loading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(String error)? failed,
+    TResult? Function(Exception exception)? failed,
     TResult? Function()? success,
   }) {
     return loading?.call();
@@ -261,7 +261,7 @@ class _$_Loading extends _Loading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(String error)? failed,
+    TResult Function(Exception exception)? failed,
     TResult Function()? success,
     required TResult orElse(),
   }) {
@@ -319,7 +319,7 @@ abstract class _$$_FailedCopyWith<$Res> {
   factory _$$_FailedCopyWith(_$_Failed value, $Res Function(_$_Failed) then) =
       __$$_FailedCopyWithImpl<$Res>;
   @useResult
-  $Res call({String error});
+  $Res call({Exception exception});
 }
 
 /// @nodoc
@@ -332,13 +332,13 @@ class __$$_FailedCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? error = null,
+    Object? exception = null,
   }) {
     return _then(_$_Failed(
-      null == error
-          ? _value.error
-          : error // ignore: cast_nullable_to_non_nullable
-              as String,
+      null == exception
+          ? _value.exception
+          : exception // ignore: cast_nullable_to_non_nullable
+              as Exception,
     ));
   }
 }
@@ -346,14 +346,14 @@ class __$$_FailedCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_Failed extends _Failed {
-  const _$_Failed(this.error) : super._();
+  const _$_Failed(this.exception) : super._();
 
   @override
-  final String error;
+  final Exception exception;
 
   @override
   String toString() {
-    return 'BaseStatus.failed(error: $error)';
+    return 'BaseStatus.failed(exception: $exception)';
   }
 
   @override
@@ -361,11 +361,12 @@ class _$_Failed extends _Failed {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_Failed &&
-            (identical(other.error, error) || other.error == error));
+            (identical(other.exception, exception) ||
+                other.exception == exception));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, error);
+  int get hashCode => Object.hash(runtimeType, exception);
 
   @JsonKey(ignore: true)
   @override
@@ -378,10 +379,10 @@ class _$_Failed extends _Failed {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(String error) failed,
+    required TResult Function(Exception exception) failed,
     required TResult Function() success,
   }) {
-    return failed(error);
+    return failed(exception);
   }
 
   @override
@@ -389,10 +390,10 @@ class _$_Failed extends _Failed {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(String error)? failed,
+    TResult? Function(Exception exception)? failed,
     TResult? Function()? success,
   }) {
-    return failed?.call(error);
+    return failed?.call(exception);
   }
 
   @override
@@ -400,12 +401,12 @@ class _$_Failed extends _Failed {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(String error)? failed,
+    TResult Function(Exception exception)? failed,
     TResult Function()? success,
     required TResult orElse(),
   }) {
     if (failed != null) {
-      return failed(error);
+      return failed(exception);
     }
     return orElse();
   }
@@ -449,10 +450,10 @@ class _$_Failed extends _Failed {
 }
 
 abstract class _Failed extends BaseStatus {
-  const factory _Failed(final String error) = _$_Failed;
+  const factory _Failed(final Exception exception) = _$_Failed;
   const _Failed._() : super._();
 
-  String get error;
+  Exception get exception;
   @JsonKey(ignore: true)
   _$$_FailedCopyWith<_$_Failed> get copyWith =>
       throw _privateConstructorUsedError;
@@ -497,7 +498,7 @@ class _$_Success extends _Success {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(String error) failed,
+    required TResult Function(Exception exception) failed,
     required TResult Function() success,
   }) {
     return success();
@@ -508,7 +509,7 @@ class _$_Success extends _Success {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(String error)? failed,
+    TResult? Function(Exception exception)? failed,
     TResult? Function()? success,
   }) {
     return success?.call();
@@ -519,7 +520,7 @@ class _$_Success extends _Success {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(String error)? failed,
+    TResult Function(Exception exception)? failed,
     TResult Function()? success,
     required TResult orElse(),
   }) {

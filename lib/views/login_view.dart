@@ -1,11 +1,9 @@
-import 'package:auto_route/annotations.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mynotes/constants/app_router.gr.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
-import 'package:mynotes/services/auth/bloc/auth_cubit.dart';
-import 'package:mynotes/services/auth/bloc/auth_state.dart';
+import '../constants/app_router.gr.dart';
+import '../services/auth/cubit/auth_cubit.dart';
 import '../utilities/dialogs/error_dialog.dart';
 import 'custom_text_field.dart';
 
@@ -50,14 +48,19 @@ class _LoginViewState extends State<LoginView> {
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) async {
-        if (state is AuthStateLoggedOut) {
-          if (state.exception is UserNotFoundAuthException) {
-            _showErrorDialog('User not found');
-          } else if (state.exception is WrongPasswordAuthException) {
-            _showErrorDialog('Wrong credentials');
-          } else if (state.exception is GenericAuthException) {
-            _showErrorDialog('Authentication Error');
-          }
+        if (state.authStatus.isLoggedOut) {
+          state.status.maybeWhen(
+            orElse: () => '',
+            failed: (Exception exception) {
+              if (exception is UserNotFoundAuthException) {
+                _showErrorDialog('User not found');
+              } else if (exception is WrongPasswordAuthException) {
+                _showErrorDialog('Wrong credentials');
+              } else if (exception is GenericAuthException) {
+                _showErrorDialog('Authentication Error');
+              }
+            },
+          );
         }
       },
       child: Scaffold(

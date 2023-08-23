@@ -97,6 +97,7 @@ class _LoginViewState extends State<LoginView> {
                     controller: emailController,
                     hintText: 'Enter your email here',
                     obscureText: false,
+                    inputType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter your email';
@@ -108,6 +109,7 @@ class _LoginViewState extends State<LoginView> {
                   CustomTextField(
                     controller: passwordController,
                     hintText: 'Enter your password',
+                    inputType: TextInputType.text,
                     obscureText: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {

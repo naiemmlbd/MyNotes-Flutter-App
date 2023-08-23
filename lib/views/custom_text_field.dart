@@ -5,14 +5,16 @@ class CustomTextField extends StatelessWidget {
   final String hintText;
   final FormFieldValidator<String>? validator;
   final bool obscureText;
+  final TextInputType inputType;
 
-  const CustomTextField(
-      {Key? key,
-      required this.controller,
-      required this.hintText,
-      this.validator,
-      required this.obscureText})
-      : super(key: key);
+  const CustomTextField({
+    Key? key,
+    required this.controller,
+    required this.hintText,
+    this.validator,
+    required this.obscureText,
+    required this.inputType,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,8 @@ class CustomTextField extends StatelessWidget {
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
-        keyboardType: TextInputType.emailAddress,
+        autocorrect: false,
+        keyboardType: inputType,
         decoration: InputDecoration(
           filled: true,
           fillColor: Colors.grey[200],

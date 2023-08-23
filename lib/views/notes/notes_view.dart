@@ -1,14 +1,16 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mynotes/constants/app_router.gr.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
-import 'package:mynotes/services/auth/bloc/auth_events.dart';
 import 'package:mynotes/services/crud/notes_service.dart';
 import 'package:mynotes/views/notes/notes_list_view.dart';
-import '../../constants/routes.dart';
 import '../../enums/menu_action.dart';
-import '../../services/auth/bloc/auth_bloc.dart';
+import '../../services/auth/cubit/auth_cubit.dart';
+import '../../services/crud/models/database_note.dart';
 import '../../utilities/dialogs/logout_dialog.dart';
 
+@RoutePage()
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
 
@@ -28,22 +30,35 @@ class _NotesViewState extends State<NotesView> {
 
   @override
   Widget build(BuildContext context) {
+    final router = AutoRouter.of(context);
+
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Your notes'),
+          title: const Text('Notes'),
           actions: [
-            IconButton(
+            ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.of(context).pushNamed(createOrUpdateNoteRoute);
+                  router.push(CreateUpdateNoteRoute());
                 },
-                icon: const Icon(Icons.add)),
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: const Text(
+                  'Add',
+                  style: TextStyle(color: Colors.amberAccent),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.grey,
+                ),
+              ),
+            ),
             PopupMenuButton<MenuAction>(
               onSelected: (value) async {
                 switch (value) {
                   case MenuAction.logout:
                     final shouldLogout = await showLogOutDialog(context);
                     if (shouldLogout) {
-                      context.read<AuthBloc>().add(AuthEventLogOut());
+                      context.read<AuthCubit>().logOut();
                     }
                     break;
                   default:
@@ -77,9 +92,8 @@ class _NotesViewState extends State<NotesView> {
                               await _notesService.deleteNote(id: note.id);
                             },
                             onTap: (DatabaseNote note) {
-                              Navigator.of(context).pushNamed(
-                                  createOrUpdateNoteRoute,
-                                  arguments: note);
+                              router.push(
+                                  CreateUpdateNoteRoute(databaseNote: note));
                             },
                           );
                         } else {
@@ -95,12 +109,30 @@ class _NotesViewState extends State<NotesView> {
                           );
                         }
                       default:
-                        return const CircularProgressIndicator();
+                        return const Scaffold(
+                          body: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                CircularProgressIndicator(),
+                              ],
+                            ),
+                          ),
+                        );
                     }
                   },
                 );
               default:
-                return const CircularProgressIndicator();
+                return const Scaffold(
+                  body: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                      ],
+                    ),
+                  ),
+                );
             }
           },
         ));

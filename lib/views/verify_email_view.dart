@@ -1,8 +1,9 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:mynotes/services/auth/bloc/auth_events.dart';
-import '../services/auth/bloc/auth_bloc.dart';
+import '../services/auth/cubit/auth_cubit.dart';
 
+@RoutePage()
 class VerifyEmailView extends StatefulWidget {
   const VerifyEmailView({super.key});
 
@@ -23,9 +24,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               "If you haven't received a verification email yet, press the button below"),
           TextButton(
             onPressed: () async {
-              context
-                  .read<AuthBloc>()
-                  .add(const AuthEventSendEmailVerification());
+              context.read<AuthCubit>().sendEmailVerification;
             },
             child: const Text(
               'Send email verification',
@@ -33,7 +32,7 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           ),
           TextButton(
               onPressed: () async {
-                context.read<AuthBloc>().add(const AuthEventLogOut());
+                context.read<AuthCubit>().logOut();
               },
               child: const Text('Restart'))
         ],

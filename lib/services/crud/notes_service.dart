@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'package:flutter/material.dart';
 import 'package:mynotes/extensions/filter.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'crud_exceptions.dart';
+import 'models/database_note.dart';
+import 'models/database_user.dart';
 
 class NotesService {
   Database? _db;
@@ -74,7 +75,7 @@ class NotesService {
     final db = _getDatabaseOrThrow();
     final dbNote = await getNote(id: note.id);
 
-    if (dbNote != note) {
+    if (dbNote.id != note.id) {
       throw CouldNotFindUserException();
     }
 
@@ -90,7 +91,6 @@ class NotesService {
   }
 
   Future<Iterable<DatabaseNote>> getAllNotes() async {
-    await _ensureDbIsOpen();
     final db = _getDatabaseOrThrow();
     final notes = await db.query(
       noteTable,
@@ -154,7 +154,7 @@ class NotesService {
       throw CouldNotFindUserException();
     }
 
-    const text = 'TTT';
+    const text = '';
     final noteId = await db.insert(noteTable,
         {userIdColumn: owner.id, textColumn: text, isSyncedWithCloudColumn: 1});
 
@@ -253,60 +253,6 @@ class NotesService {
       _db = null;
     }
   }
-}
-
-@immutable
-class DatabaseUser {
-  final int id;
-  final String email;
-
-  const DatabaseUser({
-    required this.id,
-    required this.email,
-  });
-
-  DatabaseUser.fromRow(Map<String, Object?> map)
-      : id = map[idColumn] as int,
-        email = map[emailColumn] as String;
-
-  @override
-  String toString() => 'Person, ID = $id, email = $email';
-
-  @override
-  bool operator ==(covariant DatabaseUser other) => id == other.id;
-
-  @override
-  int get hashCode => id.hashCode;
-}
-
-class DatabaseNote {
-  final int id;
-  final int userId;
-  final String text;
-  final bool isSyncedWithCloud;
-
-  DatabaseNote(
-      {required this.id,
-      required this.userId,
-      required this.text,
-      required this.isSyncedWithCloud});
-
-  DatabaseNote.fromRow(Map<String, Object?> map)
-      : id = map[idColumn] as int,
-        userId = map[userIdColumn] as int,
-        text = map[textColumn] as String,
-        isSyncedWithCloud =
-            (map[isSyncedWithCloudColumn] as int) == 1 ? true : false;
-
-  @override
-  String toString() =>
-      'Notes,, ID=$id, userId= $userId, isSyncedWithCloud = $isSyncedWithCloud, text = $text';
-
-  @override
-  bool operator ==(covariant DatabaseNote other) => id == other.id;
-
-  @override
-  int get hashCode => id.hashCode;
 }
 
 const dbName = 'notes.db';

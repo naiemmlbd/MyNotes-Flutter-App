@@ -1,13 +1,16 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/crud/notes_service.dart';
 import 'package:mynotes/utilities/generics/get_arguments.dart';
 import 'package:share_plus/share_plus.dart';
-
+import '../../services/crud/models/database_note.dart';
 import '../../utilities/dialogs/cannot_share_empty_note_dialog.dart';
 
+@RoutePage()
 class CreateUpdateNoteView extends StatefulWidget {
-  const CreateUpdateNoteView({Key? key}) : super(key: key);
+  const CreateUpdateNoteView({Key? key, this.databaseNote}) : super(key: key);
+  final DatabaseNote? databaseNote;
 
   @override
   State<CreateUpdateNoteView> createState() => _CreateUpdateNoteViewState();

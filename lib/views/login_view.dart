@@ -1,11 +1,13 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
-import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
-import 'package:mynotes/services/auth/bloc/auth_events.dart';
-import 'package:mynotes/services/auth/bloc/auth_state.dart';
+import '../constants/app_router.gr.dart';
+import '../services/auth/cubit/auth_cubit.dart';
 import '../utilities/dialogs/error_dialog.dart';
+import 'custom_text_field.dart';
 
+@RoutePage()
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
 
@@ -39,21 +41,26 @@ class _LoginViewState extends State<LoginView> {
   void _login(BuildContext context) {
     final email = emailController.text;
     final password = passwordController.text;
-    context.read<AuthBloc>().add(AuthEventLogIn(email, password));
+    context.read<AuthCubit>().logIn(email, password);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) async {
-        if (state is AuthStateLoggedOut) {
-          if (state.exception is UserNotFoundAuthException) {
-            _showErrorDialog('User not found');
-          } else if (state.exception is WrongPasswordAuthException) {
-            _showErrorDialog('Wrong credentials');
-          } else if (state.exception is GenericAuthException) {
-            _showErrorDialog('Authentication Error');
-          }
+        if (state.authStatus.isLoggedOut) {
+          state.status.maybeWhen(
+            orElse: () => '',
+            failed: (Exception exception) {
+              if (exception is UserNotFoundAuthException) {
+                _showErrorDialog('User not found');
+              } else if (exception is WrongPasswordAuthException) {
+                _showErrorDialog('Wrong credentials');
+              } else if (exception is GenericAuthException) {
+                _showErrorDialog('Authentication Error');
+              }
+            },
+          );
         }
       },
       child: Scaffold(
@@ -86,72 +93,30 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ),
                   const SizedBox(height: 100),
-                  SizedBox(
-                    height: 55,
-                    width: double.infinity,
-                    child: TextFormField(
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey[200],
-                        hintText: 'Enter your email here',
-                        hintStyle: const TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide:
-                              const BorderSide(color: Colors.transparent),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide:
-                              const BorderSide(color: Colors.transparent),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        return null;
-                      },
-                    ),
+                  CustomTextField(
+                    controller: emailController,
+                    hintText: 'Enter your email here',
+                    obscureText: false,
+                    inputType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 10),
-                  SizedBox(
-                    height: 55,
-                    width: double.infinity,
-                    child: TextFormField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Colors.grey[200],
-                        hintText: 'Enter your password here',
-                        hintStyle: const TextStyle(
-                          fontSize: 15,
-                          color: Colors.grey,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide:
-                              const BorderSide(color: Colors.transparent),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide:
-                              const BorderSide(color: Colors.transparent),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
-                        }
-                        return null;
-                      },
-                    ),
+                  CustomTextField(
+                    controller: passwordController,
+                    hintText: 'Enter your password',
+                    inputType: TextInputType.text,
+                    obscureText: true,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -177,9 +142,7 @@ class _LoginViewState extends State<LoginView> {
                   ),
                   TextButton(
                     onPressed: () {
-                      context
-                          .read<AuthBloc>()
-                          .add(const AuthEventShouldRegister());
+                      context.router.push(const RegisterRoute());
                     },
                     child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,

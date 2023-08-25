@@ -1,11 +1,12 @@
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/services/auth/auth_exceptions.dart';
-import 'package:mynotes/services/auth/bloc/auth_bloc.dart';
-import 'package:mynotes/services/auth/bloc/auth_state.dart';
-import '../services/auth/bloc/auth_events.dart';
+import '../services/auth/cubit/auth_cubit.dart';
 import '../utilities/dialogs/error_dialog.dart';
+import 'custom_text_field.dart';
 
+@RoutePage()
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
 
@@ -31,59 +32,107 @@ class _RegisterViewState extends State<RegisterView> {
     super.dispose();
   }
 
+  void _showErrorDialog(String errorMessage) async {
+    await showErrorDialog(context, errorMessage);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
+    final cubit = context.read<AuthCubit>();
+
+    return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) async {
-        if (state is AuthStateRegistering) {
-          if (state.exception is WeakPasswordAuthException) {
-            await showErrorDialog(context, 'Weak password');
-          } else if (state.exception is EmailAlreadyUseAuthException) {
-            await showErrorDialog(context, 'Email is already in use');
-          } else if (state.exception is GenericAuthException) {
-            await showErrorDialog(context, 'Failed to register');
-          }
+        if (state.authStatus.isRegistering) {
+          state.status.maybeWhen(
+            orElse: () => '',
+            failed: (Exception exception) {
+              if (exception is WeakPasswordAuthException) {
+                _showErrorDialog('Weak password');
+              } else if (exception is EmailAlreadyUseAuthException) {
+                _showErrorDialog('Email is already in use');
+              } else if (exception is GenericAuthException) {
+                _showErrorDialog('Failed to register');
+              }
+            },
+          );
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Regiser')),
-        body: Column(
+        body: Stack(
           children: [
-            TextField(
-              controller: _email,
-              enableSuggestions: false,
-              autocorrect: false,
-              keyboardType: TextInputType.emailAddress,
-              decoration:
-                  const InputDecoration(hintText: 'Enter your email here'),
-            ),
-            TextField(
-              controller: _password,
-              obscureText: true,
-              enableSuggestions: false,
-              autocorrect: false,
-              decoration:
-                  const InputDecoration(hintText: 'Enter your pasword here'),
-            ),
-            TextButton(
-              onPressed: () async {
-                final email = _email.text;
-                final password = _password.text;
-                context.read<AuthBloc>().add(
-                      AuthEventRegister(
-                        email,
-                        password,
+            Container(
+              padding: const EdgeInsets.only(top: 64),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topRight,
+                  end: Alignment.center,
+                  colors: [
+                    Colors.deepPurpleAccent,
+                    Colors.black,
+                  ],
+                ),
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      CustomTextField(
+                        controller: _email,
+                        hintText: 'Enter your email here',
+                        inputType: TextInputType.emailAddress,
+                        obscureText: false,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          return null;
+                        },
                       ),
-                    );
-              },
-              child: const Text('Register'),
+                      const SizedBox(height: 10),
+                      CustomTextField(
+                        controller: _password,
+                        hintText: 'Enter your pasword here',
+                        inputType: TextInputType.text,
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          return null;
+                        },
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          final email = _email.text;
+                          final password = _password.text;
+                          cubit.register(email, password);
+                        },
+                        child: const Text('Register'),
+                      ),
+                      TextButton(
+                        onPressed: cubit.logOut,
+                        child: const Text('Already registered? Login here!'),
+                      )
+                    ],
+                  ),
+                ),
+              ),
             ),
-            TextButton(
-              onPressed: () {
-                context.read<AuthBloc>().add(const AuthEventLogOut());
-              },
-              child: const Text('Already registered? Login here!'),
-            )
+            SizedBox(
+              height: kToolbarHeight + 44,
+              child: AppBar(
+                backgroundColor: Colors.transparent,
+                iconTheme: const IconThemeData(color: Colors.white),
+                elevation: 0,
+                title: const Text(
+                  'Register',
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
